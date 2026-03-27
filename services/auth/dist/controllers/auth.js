@@ -11,12 +11,41 @@ export const loginUser = TryCatch(async (req, res) => {
             image: picture
         });
     }
-    const token = jwt.sign({ user }, process.env.JWT_SECRECT, {
+    const token = jwt.sign({ user }, process.env.JWT_SEC, {
         expiresIn: "5d"
     });
     res.json({
         message: "login success",
         token,
         user
+    });
+});
+const allowedRoles = ["customer", "rider", "seller"];
+export const addUserRole = TryCatch(async (req, res) => {
+    if (!req.user?._id) {
+        return res.status(401).json({
+            message: "Unauthorized - Please login"
+        });
+    }
+    const { role } = req.body;
+    if (!role || !allowedRoles.includes(role)) {
+        return res.status(403).json({
+            message: "Unauthorized role"
+        });
+    }
+    const user = await User.findByIdAndUpdate(req.user._id, { role }, { new: true });
+    if (!user) {
+        return res.status(404).json({
+            message: "User not found"
+        });
+    }
+    const token = jwt.sign({
+        id: user._id,
+        role: user.role
+    }, process.env.JWT_SEC, { expiresIn: "5d" });
+    res.json({
+        message: "Role updated",
+        user,
+        token
     });
 });
