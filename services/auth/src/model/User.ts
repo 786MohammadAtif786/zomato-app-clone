@@ -24,6 +24,13 @@ const schema: Schema<IUSER> = new Schema({
     role: {
         type: String,
         default: null
-    },
+    }
 
-})
+}, {
+    timestamps: true
+});
+
+
+const User = mongoose.model<IUSER>("User", schema);
+
+export default User;
