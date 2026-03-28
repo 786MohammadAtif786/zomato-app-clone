@@ -39,13 +39,18 @@ export const addUserRole = TryCatch(async (req, res) => {
             message: "User not found"
         });
     }
-    const token = jwt.sign({
-        id: user._id,
-        role: user.role
-    }, process.env.JWT_SEC, { expiresIn: "5d" });
+    const token = jwt.sign({ user }, process.env.JWT_SEC, {
+        expiresIn: "5d"
+    });
     res.json({
         message: "Role updated",
         user,
         token
     });
+});
+export const myProfile = TryCatch(async (req, res) => {
+    const user = req.user;
+    console.log("Hello");
+    console.log(user);
+    res.json(user);
 });

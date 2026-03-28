@@ -60,14 +60,9 @@ export const addUserRole = TryCatch(async (req: AuthenticatedRequest, res) => {
     });
   }
 
-  const token = jwt.sign(
-    {
-      id: user._id,
-      role: user.role
-    },
-    process.env.JWT_SEC as string,
-    { expiresIn: "5d" }
-  );
+    const token = jwt.sign({user}, process.env.JWT_SEC as string, {
+            expiresIn: "5d"
+    })
 
   res.json({
     message: "Role updated",
@@ -75,3 +70,12 @@ export const addUserRole = TryCatch(async (req: AuthenticatedRequest, res) => {
     token
   });
 });
+
+export const myProfile = TryCatch(async (req: AuthenticatedRequest, res) => {
+  const user = req.user;
+  console.log("Hello");
+  
+  console.log(user);
+  
+  res.json(user)
+})
