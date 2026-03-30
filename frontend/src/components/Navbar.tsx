@@ -5,9 +5,9 @@ import { CgShoppingCart } from "react-icons/cg";
 import { BiMapPin, BiSearch } from "react-icons/bi";
 
 const Navbar = () => {
-    const city  = "Jaunpur";
+   // const city  = "Jaunpur";
     const quauntity = 2;
-  const { isAuth } = useAppData();
+  const { isAuth, city } = useAppData();
   const currLocation = useLocation();
 
   const isHomePage = currLocation.pathname === "/";
