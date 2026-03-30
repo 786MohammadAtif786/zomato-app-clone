@@ -6,6 +6,7 @@ import ProtectedRoutes from "./components/protectedRoutes.tsx";
 import PublicRoute from "./components/publicRouter";
 import SelectRole from "./pages/SelectRole";
 import Navbar from "./components/Navbar.tsx";
+import Account from "./pages/Account.tsx";
 
 function App() {
   return (
@@ -19,6 +20,8 @@ function App() {
         <Route element={<ProtectedRoutes />} >
         <Route path="/" element={<Home />} />
         <Route path="/select-role" element={<SelectRole />} />
+        <Route path="/account" element={<Account />} />
+
         </Route>
        
       </Routes>
