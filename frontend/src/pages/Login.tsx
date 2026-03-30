@@ -3,29 +3,43 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { authService } from "../main";
 import toast from "react-hot-toast";
-import {  useGoogleLogin } from '@react-oauth/google';
-import {FcGoogle} from "react-icons/fc"
+import { useGoogleLogin } from '@react-oauth/google';
+import { FcGoogle } from "react-icons/fc"
+import  { useAppData } from "../context/AppContext";
 
 
 function Login() {
-  const [loading, setLoading]  = useState(false);
+  const [loading, setLoading] = useState(false);
+  const { setUser, setIsAuth } = useAppData();
   const navigate = useNavigate();
-  const responseGoogle = async(authResult: any) => {
+  const responseGoogle = async (authResult: any) => {
     setLoading(true);
     try {
+
       const result = await axios.post(`${authService}/api/auth/login`, {
         code: authResult["code"],
       });
+      const user = result.data.user;
       localStorage.setItem("token", result.data.token);
+      localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem("isAuth", "true");
+
+      setUser(user);
+      setIsAuth(true);
+      
       toast.success(result.data.message);
       setLoading(false);
-      navigate("/");
+       navigate("/");
+      console.log(user.role);
+      
+   
     } catch (err) {
       console.error(err);
       toast.error("Problem while login");
       setLoading(false)
     }
   }
+
   const googleLogin = useGoogleLogin({
     onSuccess: responseGoogle,
     onError: responseGoogle,
@@ -43,10 +57,10 @@ function Login() {
         <p className="text-center text-xs text-gray-400 ">
           By Continuning, you agree with our {" "}
           <span className="text-[#E23774]"> Terms of Service</span> & {" "}
-          <span className="text-[#E23774]"> Privacy Policy</span> 
+          <span className="text-[#E23774]"> Privacy Policy</span>
         </p>
       </div>
-      </div>
+    </div>
   )
 }
 

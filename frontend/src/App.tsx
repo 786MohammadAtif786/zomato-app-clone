@@ -5,11 +5,13 @@ import { Toaster } from "react-hot-toast";
 import ProtectedRoutes from "./components/protectedRoutes.tsx";
 import PublicRoute from "./components/publicRouter";
 import SelectRole from "./pages/SelectRole";
+import Navbar from "./components/Navbar.tsx";
 
 function App() {
   return (
    <>
     <BrowserRouter>
+      <Navbar />
       <Routes>
         <Route element={<PublicRoute />} >
              <Route path="/login" element={<Login />} />

@@ -36,10 +36,22 @@ export const AppProvider = ({ children }: AppProviderProps) => {
         }
     }
 
-    useEffect(() => {
-        fetchUser();
-    }, [])
+    // useEffect(() => {
+    //     fetchUser();
+    // }, [])
 
+    useEffect(() => {
+  const storedUser = localStorage.getItem("user");
+  const storedAuth = localStorage.getItem("isAuth");
+
+  if (storedUser && storedAuth === "true") {
+    setUser(JSON.parse(storedUser));
+    setIsAuth(true);
+    setLoading(false);
+  } else {
+    fetchUser();
+  }
+}, []);
     return <AppContext.Provider value={{isAuth, loading, setIsAuth, setLoading, setUser, user}}>{children}</AppContext.Provider>
 }
 
