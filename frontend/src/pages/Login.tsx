@@ -16,7 +16,7 @@ function Login() {
       const result = await axios.post(`${authService}/api/auth/login`, {
         code: authResult["code"],
       });
-      localStorage.setItem("toekn", result.data.token);
+      localStorage.setItem("token", result.data.token);
       toast.success(result.data.message);
       setLoading(false);
       navigate("/");
