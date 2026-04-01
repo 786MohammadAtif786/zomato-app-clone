@@ -15,6 +15,6 @@ const PORT = process.env.PORT || 3001;
 // app.use("/api/auth", authRoute)
 
 app.listen(PORT, () => {
-    console.log(`Auth service is running on ${PORT}`);
+    console.log(`Restaurant service is running on ${PORT}`);
     connectDB()
 })
