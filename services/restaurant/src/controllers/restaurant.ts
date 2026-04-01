@@ -1,5 +1,6 @@
  import axios from "axios";
 import getBuffer from "../config/datauri.js";
+import jwt from "jsonwebtoken";
 import { AuthenticatedRequest } from "../middleware/isAuth.js";
 import TryCatch from "../middleware/tryCatch.js";
 import Restaurant from "../model/Restaurant.js";
@@ -74,3 +75,41 @@ export const addRestraunt = TryCatch(async (req: AuthenticatedRequest, res) => {
     restaurant,
   });
 });
+
+
+
+export const fetchMyRestaurant = TryCatch(
+  async (req: AuthenticatedRequest, res) => {
+    if (!req.user) {
+      return res.status(401).json({
+        message: "Please Login",
+      });
+    }
+    const restaurant = await Restaurant.findOne({ ownerId: req.user._id });
+
+    if (!restaurant) {
+      return res.status(400).json({
+        message: "No Restaurant found",
+      });
+    }
+
+    if (!req.user.restaurantId) {
+      const token = jwt.sign(
+        {
+          user: {
+            ...req.user,
+            restaurantId: restaurant._id,
+          },
+        },
+        process.env.JWT_SEC as string,
+        {
+          expiresIn: "15d",
+        }
+      );
+
+      return res.json({ restaurant, token });
+    }
+
+    res.json({ restaurant });
+  }
+);
