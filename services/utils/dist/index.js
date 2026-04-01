@@ -7,6 +7,7 @@ const express_1 = __importDefault(require("express"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const cloudinary_1 = __importDefault(require("cloudinary"));
 const cors_1 = __importDefault(require("cors"));
+const cloudinary_js_1 = __importDefault(require("./routes/cloudinary.js"));
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)());
@@ -21,6 +22,7 @@ cloudinary_1.default.v2.config({
     api_key: CLOUD_API_KEY,
     api_secret: CLOUD_SECRET_KEY,
 });
+app.use("/api", cloudinary_js_1.default);
 const PORT = process.env.PORT || 3002;
 app.listen(PORT, () => {
     console.log(`Utils service is running on port ${PORT}`);
