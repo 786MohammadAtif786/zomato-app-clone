@@ -90,3 +90,37 @@ export const deleteMenuItem = TryCatch(async (req, res) => {
         message: "Menu item deleted successfully",
     });
 });
+export const toggleMenuItemAvailability = TryCatch(async (req, res) => {
+    if (!req.user) {
+        return res.status(401).json({
+            message: "Please login",
+        });
+    }
+    const { itemId } = req.params;
+    if (!itemId) {
+        return res.status(400).json({
+            message: "Id is required",
+        });
+    }
+    const item = await MenuItems.findById(itemId);
+    if (!item) {
+        return res.status(404).json({
+            message: "No item found",
+        });
+    }
+    const restaraunt = await Restaurant.findOne({
+        _id: item.restaurantId,
+        ownerId: req.user._id,
+    });
+    if (!restaraunt) {
+        return res.status(404).json({
+            message: "NO Restaurant found",
+        });
+    }
+    item.isAvailable = !item.isAvailable;
+    await item.save();
+    res.json({
+        message: `Item Marked as ${item.isAvailable ? "available" : "unavailable"}`,
+        item,
+    });
+});
