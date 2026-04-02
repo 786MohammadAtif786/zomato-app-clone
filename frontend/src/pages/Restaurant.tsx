@@ -80,7 +80,12 @@ const Restaurant = () => {
             </button>
             ))}
         </div>
-
+        
+           <div className="p-5">
+          {tab === "menu" && <p>Menu Page</p>}
+          {tab === "add-item" && <p>Add Item</p>}
+          {tab === "sales" && <p>Sales Page</p>}
+        </div>
        </div>
        </div>
    </>
