@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import type {  IRestaurant } from "../types";
 import axios from "axios";
 import { restaurantService } from "../main";
+import AddRestaurant from "../components/AddRestaurant.tsx";
 
 const Restaurant = () => {
   const [restaurant, setRestaurant] = useState<IRestaurant | null>(null);
@@ -36,28 +37,6 @@ const Restaurant = () => {
   }, []);
 
 
-  // const fetchMenuItems = async (restaurantId: string) => {
-  //   try {
-  //     const { data } = await axios.get(
-  //       `${restaurantService}/api/item/all/${restaurantId}`,
-  //       {
-  //         headers: {
-  //           Authorization: `Bearer ${localStorage.getItem("token")}`,
-  //         },
-  //       }
-  //     );
-
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   if (restaurant?._id) {
-  //     fetchMenuItems(restaurant._id);
-  //   }
-  // }, [restaurant]);
-
   if (loading)
     return (
       <div className="flex min-h-screen items-center justify-center">
@@ -65,12 +44,12 @@ const Restaurant = () => {
       </div>
     );
 
-  // if (!restaurant) {
-  //   return <AddRestaurant fetchMyRestaurant={fetchMyRestaurant} />;
-  // }
+  if (!restaurant) {
+    return <AddRestaurant fetchMyRestaurant={fetchMyRestaurant} />;
+  }
   return (
    <>
-    <h1>Restaurant</h1>
+       <div className="min-h-screen bg-gray-50 px-4 py-6 space-y-6">Restaurant</div>
    </>
   );
 };

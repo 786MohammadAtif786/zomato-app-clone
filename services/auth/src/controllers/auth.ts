@@ -94,7 +94,7 @@
 
 import User from "../model/User.js";
 import jwt from "jsonwebtoken";
-import TryCatch from "../middlewares/trycatch.js";
+import TryCatch from "../middlewares/tryCatch.js";
 import { AuthenticatedRequest } from "../middlewares/isAuth.js";
 import { oauth2client } from "../config/googleConfig.js";
 import axios from "axios";
