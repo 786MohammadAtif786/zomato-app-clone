@@ -33,3 +33,27 @@ export const addToCart = TryCatch(async (req, res) => {
         cart: cartItem,
     });
 });
+export const fetchMyCart = TryCatch(async (req, res) => {
+    if (!req.user) {
+        return res.status(401).json({
+            message: "Please Login",
+        });
+    }
+    const userId = req.user._id;
+    const cartItems = await Cart.find({ userId })
+        .populate("itemId")
+        .populate("restaurantId");
+    let subtotal = 0;
+    let cartLength = 0;
+    for (const cartItem of cartItems) {
+        const item = cartItem.itemId;
+        subtotal += item.price * cartItem.quauntity;
+        cartLength += cartItem.quauntity;
+    }
+    return res.json({
+        success: true,
+        cartLength,
+        subtotal,
+        cart: cartItems,
+    });
+});
