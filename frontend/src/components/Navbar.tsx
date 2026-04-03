@@ -5,10 +5,9 @@ import { CgShoppingCart } from "react-icons/cg";
 import { BiMapPin, BiSearch } from "react-icons/bi";
 
 const Navbar = () => {
-   // const city  = "Jaunpur";
-    const quauntity = 2;
-  const { isAuth, city } = useAppData();
+  const { isAuth, city, quauntity } = useAppData();
   const currLocation = useLocation();
+console.log(quauntity);
 
   const isHomePage = currLocation.pathname === "/";
 
@@ -33,7 +32,7 @@ const Navbar = () => {
           to={"/"}
           className="text-2xl font-bold text-[#E23744] cursor-pointer"
         >
-          MealGO
+          Tomato
         </Link>
 
         <div className="flex items-center gap-4">
