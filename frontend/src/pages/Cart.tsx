@@ -4,6 +4,7 @@ import { useState } from "react";
 import type { IRestaurant } from "../types";
 import axios from "axios";
 import { restaurantService } from "../main";
+import toast from "react-hot-toast";
 
 function Cart() {
   const{cart, subTotal, quauntity, fetchCart} = useAppData();
@@ -47,6 +48,30 @@ function Cart() {
       setLoadingItemId(null);
     }
   };
+
+
+   const decreaseQty = async (itemId: string) => {
+    try {
+      setLoadingItemId(itemId);
+      await axios.put(
+        `${restaurantService}/api/cart/dec`,
+        { itemId },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      await fetchCart();
+    } catch (error) {
+      toast.error("something went wrong");
+    } finally {
+      setLoadingItemId(null);
+    }
+  };
+
+  
 
   return (
     <div>MealGo Cart</div>
