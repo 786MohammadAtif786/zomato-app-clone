@@ -71,7 +71,29 @@ function Cart() {
     }
   };
 
-  
+
+   const clearCart = async () => {
+    const confirm = window.confirm("Are you sure you want to clear you cart?");
+    if (!confirm) return;
+    try {
+      setClearingCart(true);
+      await axios.delete(`${restaurantService}/api/cart/clear`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+
+      await fetchCart();
+    } catch (error) {
+      toast.error("something went wrong");
+    } finally {
+      setClearingCart(false);
+    }
+  };
+
+  const checkout = () => {
+    navigate("/checkout");
+  };
 
   return (
     <div>MealGo Cart</div>
