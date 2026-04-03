@@ -153,3 +153,19 @@ export const decrementCartItem = TryCatch(
     });
   }
 );
+
+
+export const clearCart = TryCatch(async (req: AuthenticatedRequest, res) => {
+  const userId = req.user?._id;
+  if (!userId) {
+    return res.status(401).json({
+      message: "Unauthorized",
+    });
+  }
+
+  await Cart.deleteMany({ userId });
+
+  res.json({
+    message: "Cart cleared successfully",
+  });
+});
