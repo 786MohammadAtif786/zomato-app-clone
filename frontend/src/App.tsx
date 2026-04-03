@@ -8,6 +8,7 @@ import Navbar from "./components/Navbar.tsx";
 import Account from "./pages/Account.tsx";
 import { useAppData } from "./context/AppContext.tsx";
 import Restaurant from "./pages/Restaurant.tsx";
+import RestaurantPage from "./pages/RestaurantPage.tsx";
 
 function App() {
   const  { user } = useAppData();
@@ -24,6 +25,7 @@ function App() {
         </Route>
         <Route element={<ProtectedRoutes />} >
         <Route path="/" element={<Home />} />
+        <Route path="/restaurant/:id" element={<RestaurantPage />} />
         <Route path="/select-role" element={<SelectRole />} />
         <Route path="/account" element={<Account />} />
 
