@@ -32,7 +32,7 @@ console.log(quauntity);
           to={"/"}
           className="text-2xl font-bold text-[#E23744] cursor-pointer"
         >
-          Tomato
+          MealGO
         </Link>
 
         <div className="flex items-center gap-4">
