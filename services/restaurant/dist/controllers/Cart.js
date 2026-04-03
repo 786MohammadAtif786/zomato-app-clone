@@ -76,3 +76,30 @@ export const incrementCartItem = TryCatch(async (req, res) => {
         cartItem,
     });
 });
+export const decrementCartItem = TryCatch(async (req, res) => {
+    const userId = req.user?._id;
+    const { itemId } = req.body;
+    if (!userId || !itemId) {
+        return res.status(400).json({
+            message: "Invalid request",
+        });
+    }
+    const cartItem = await Cart.findOne({ userId, itemId });
+    if (!cartItem) {
+        return res.status(404).json({
+            message: "Item not found",
+        });
+    }
+    if (cartItem.quauntity === 1) {
+        await Cart.deleteOne({ userId, itemId });
+        return res.json({
+            message: "Item removed from cart",
+        });
+    }
+    cartItem.quauntity -= 1;
+    await cartItem.save();
+    res.json({
+        message: "Quantity decreased",
+        cartItem,
+    });
+});
