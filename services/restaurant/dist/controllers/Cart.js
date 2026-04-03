@@ -57,3 +57,22 @@ export const fetchMyCart = TryCatch(async (req, res) => {
         cart: cartItems,
     });
 });
+export const incrementCartItem = TryCatch(async (req, res) => {
+    const userId = req.user?._id;
+    const { itemId } = req.body;
+    if (!userId || !itemId) {
+        return res.status(400).json({
+            message: "Invalid request",
+        });
+    }
+    const cartItem = await Cart.findOneAndUpdate({ userId, itemId }, { $inc: { quauntity: 1 } }, { new: true });
+    if (!cartItem) {
+        return res.status(404).json({
+            message: "Item not found",
+        });
+    }
+    res.json({
+        message: "Quantity increased",
+        cartItem,
+    });
+});
