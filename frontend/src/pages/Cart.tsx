@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useAppData } from "../context/AppContext"
 import { useState } from "react";
+import type { IRestaurant } from "../types";
 
 function Cart() {
   const{cart, subTotal, quauntity, fetchCart} = useAppData();
@@ -15,6 +16,15 @@ function Cart() {
       </div>
     );
   }
+
+  const restaurant = cart[0].restaurantId as IRestaurant;
+
+  const deliveryFee = subTotal < 250 ? 49 : 0;
+
+  const platfromFee = 7;
+
+  const grandTotal = subTotal + deliveryFee + platfromFee;
+
   return (
     <div>MealGo Cart</div>
   )
