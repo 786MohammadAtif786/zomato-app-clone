@@ -57,3 +57,15 @@ export const deleteAddress = TryCatch(async (req, res) => {
         message: "Address deleted Successfully",
     });
 });
+export const getMyAddresses = TryCatch(async (req, res) => {
+    const user = req.user;
+    if (!user) {
+        return res.status(401).json({
+            message: "Unauthorized",
+        });
+    }
+    const addresses = await Address.find({
+        userId: user._id.toString(),
+    }).sort({ createdAt: -1 });
+    res.json(addresses);
+});
