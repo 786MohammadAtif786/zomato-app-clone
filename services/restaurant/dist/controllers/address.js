@@ -30,3 +30,30 @@ export const addAddress = TryCatch(async (req, res) => {
         address: newAddress,
     });
 });
+export const deleteAddress = TryCatch(async (req, res) => {
+    const user = req.user;
+    if (!user) {
+        return res.status(401).json({
+            message: "Unauthorized",
+        });
+    }
+    const { id } = req.params;
+    if (!id) {
+        return res.status(400).json({
+            message: "id is required",
+        });
+    }
+    const address = await Address.findOne({
+        _id: id,
+        userId: user._id.toString(),
+    });
+    if (!address) {
+        return res.status(404).json({
+            message: "Address not found",
+        });
+    }
+    await address.deleteOne();
+    res.json({
+        message: "Address deleted Successfully",
+    });
+});
