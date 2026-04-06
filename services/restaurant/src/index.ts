@@ -6,6 +6,7 @@ import restaurantRoutes from "./routes/restaurant.js"
 import itemRoutes from "./routes/MenuItem.js";
 import cartRoute from "./routes/Cart.js";
 import addressRoutes from "./routes/address.js";
+import orderRoutes from "./routes/order.js";
 
 
 dotenv.config();
@@ -20,6 +21,7 @@ app.use("/api/restaurant", restaurantRoutes);
 app.use("/api/item", itemRoutes);
 app.use("/api/cart", cartRoute);
 app.use("/api/address", addressRoutes);
+app.use("/api/order", orderRoutes);
 
 
 app.listen(PORT, () => {
