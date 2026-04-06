@@ -1,6 +1,7 @@
 import TryCatch from "../middleware/tryCatch.js";
 import Address from "../model/Address.js";
 import Cart from "../model/Cart.js";
+import Restaurant from "../model/Restaurant.js";
 export const createOrder = TryCatch(async (req, res) => {
     const user = req.user;
     if (!user) {
@@ -35,6 +36,18 @@ export const createOrder = TryCatch(async (req, res) => {
     if (!firstCartItem || !firstCartItem.restaurantId) {
         return res.status(400).json({
             message: "Invailid Cart Data",
+        });
+    }
+    const restaurantId = firstCartItem.restaurantId._id;
+    const restaurant = await Restaurant.findById(restaurantId);
+    if (!restaurant) {
+        return res.status(404).json({
+            message: "No restaurant with this id",
+        });
+    }
+    if (!restaurant.isOpen) {
+        return res.status(404).json({
+            message: "Sorry this restaurant is closed for now",
         });
     }
 });
