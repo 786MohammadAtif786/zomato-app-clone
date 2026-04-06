@@ -10,6 +10,7 @@ import { useAppData } from "./context/AppContext.tsx";
 import Restaurant from "./pages/Restaurant.tsx";
 import RestaurantPage from "./pages/RestaurantPage.tsx";
 import Cart from "./pages/Cart.tsx"
+import AddAddressPage from "./pages/Address.tsx";
 
 function App() {
   const  { user } = useAppData();
@@ -26,6 +27,7 @@ function App() {
         </Route>
         <Route element={<ProtectedRoutes />} >
         <Route path="/" element={<Home />} />
+        <Route path="/address" element={<AddAddressPage />} />
         <Route path="/restaurant/:id" element={<RestaurantPage />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/select-role" element={<SelectRole />} />
