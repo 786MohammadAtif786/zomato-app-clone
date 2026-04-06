@@ -11,6 +11,7 @@ import Restaurant from "./pages/Restaurant.tsx";
 import RestaurantPage from "./pages/RestaurantPage.tsx";
 import Cart from "./pages/Cart.tsx"
 import AddAddressPage from "./pages/Address.tsx";
+import Checkout from "./pages/Checkout.tsx";
 
 function App() {
   const  { user } = useAppData();
@@ -27,6 +28,7 @@ function App() {
         </Route>
         <Route element={<ProtectedRoutes />} >
         <Route path="/" element={<Home />} />
+        <Route path="/checkout" element={<Checkout />} />
         <Route path="/address" element={<AddAddressPage />} />
         <Route path="/restaurant/:id" element={<RestaurantPage />} />
         <Route path="/cart" element={<Cart />} />
