@@ -1,6 +1,7 @@
 import TryCatch from "../middleware/tryCatch.js";
 import Address from "../model/Address.js";
 import Cart from "../model/Cart.js";
+import Order from "../model/Order.js";
 import Restaurant from "../model/Restaurant.js";
 export const createOrder = TryCatch(async (req, res) => {
     const user = req.user;
@@ -64,5 +65,38 @@ export const createOrder = TryCatch(async (req, res) => {
             price: item.price,
             quauntity: cart.quauntity,
         };
+    });
+    const deliveryFee = subtotal < 250 ? 49 : 0;
+    const platfromFee = 7;
+    const totalAmount = subtotal + deliveryFee + platfromFee;
+    const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
+    const [longitude, latitude] = address.location.coordinates;
+    const order = await Order.create({
+        userId: user._id.toString(),
+        restaurantId: restaurantId.toString(),
+        restaurantName: restaurant.name,
+        riderId: null,
+        items: orderItems,
+        subtotal,
+        deliveryFee,
+        platfromFee,
+        totalAmount,
+        addressId: address._id.toString(),
+        deliveryAddress: {
+            fromattedAddress: address.formattedAddress,
+            mobile: address.mobile,
+            latitude,
+            longitude,
+        },
+        paymentMethod,
+        paymentStatus: "pending",
+        status: "placed",
+        expiresAt,
+    });
+    await Cart.deleteMany({ userId: user._id });
+    res.json({
+        message: "Order created successfully",
+        orderId: order._id.toString(),
+        amount: totalAmount,
     });
 });
