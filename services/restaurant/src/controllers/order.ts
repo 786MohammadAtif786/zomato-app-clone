@@ -14,7 +14,7 @@ export const createOrder = TryCatch(async(req: AuthenticatedRequest, res) => {
             message: "Unauthorized"
         });
     }
-    const { paymentMethod, addressId } = req.body;
+    const { paymentMethod, addressId, distance } = req.body;
 
     if(!addressId) {
         return res.status(400).json({
@@ -90,12 +90,14 @@ export const createOrder = TryCatch(async(req: AuthenticatedRequest, res) => {
 
   const [longitude, latitude] = address.location.coordinates;
 
-
+  const riderAmount = Math.ceil(distance) * 17;
   const order = await Order.create({
     userId: user._id.toString(),
     restaurantId: restaurantId.toString(),
     restaurantName: restaurant.name,
     riderId: null,
+    distance,
+    riderAmount,
     items: orderItems,
     subtotal,
     deliveryFee,
