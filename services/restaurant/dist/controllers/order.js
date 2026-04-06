@@ -23,7 +23,9 @@ export const createOrder = TryCatch(async (req, res) => {
             message: "Address Not found"
         });
     }
-    const cartItems = await Cart.find({ userId: user._id }).populate("itemId").populate("restaurantId");
+    const cartItems = await Cart.find({ userId: user._id })
+        .populate("itemId")
+        .populate("restaurantId");
     if (cartItems.length === 0) {
         return res.status(400).json({
             message: "Cart is emplty"

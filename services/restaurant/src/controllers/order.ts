@@ -2,6 +2,8 @@ import { AuthenticatedRequest } from "../middleware/isAuth.js";
 import TryCatch from "../middleware/tryCatch.js";
 import Address from "../model/Address.js";
 import Cart from "../model/Cart.js";
+import { IMenuItem } from "../model/MenuItem.js";
+import { IRestaurant } from "../model/Restaurant.js";
 
 
 export const createOrder = TryCatch(async(req: AuthenticatedRequest, res) => {
@@ -28,7 +30,9 @@ export const createOrder = TryCatch(async(req: AuthenticatedRequest, res) => {
             message: "Address Not found"
         })
     }
-    const cartItems = await Cart.find({ userId: user._id }).populate("itemId").populate("restaurantId");
+    const cartItems = await Cart.find({ userId: user._id })
+    .populate<{ itemId: IMenuItem }>("itemId")
+    .populate<{ restaurantId: IRestaurant }>("restaurantId");
     if(cartItems.length === 0) {
         return res.status(400).json({
             message: "Cart is emplty"
