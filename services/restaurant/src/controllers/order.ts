@@ -60,5 +60,25 @@ export const createOrder = TryCatch(async(req: AuthenticatedRequest, res) => {
       message: "Sorry this restaurant is closed for now",
     });
   }
+  let subtotal = 0;
+
+  const orderItems = cartItems.map((cart) => {
+    const item = cart.itemId;
+
+    if (!item) {
+      throw new Error("Invalid cart item");
+    }
+
+    const itemTotal = item.price * cart.quauntity;
+
+    subtotal += itemTotal;
+
+    return {
+      itemId: item._id.toString(),
+      name: item.name,
+      price: item.price,
+      quauntity: cart.quauntity,
+    };
+  });
 })
 
