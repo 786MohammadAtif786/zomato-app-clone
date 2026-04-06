@@ -521,8 +521,20 @@ const AddAddressPage = () => {
             <p>{a.mobile}</p>
           </div>
 
-          <button onClick={() => deleteAddress(a._id)}>
+          {/* <button onClick={() => deleteAddress(a._id)}  className="rounded-lg p-2 text-red-500 hover:bg-red-50 disabled:opacity-50">
             {deletingId === a._id ? "..." : "Delete"}
+          </button> */}
+          <button
+            onClick={() => deleteAddress(a._id)}
+            className="rounded-lg p-2 text-red-500 hover:bg-red-50 disabled:opacity-50"
+            disabled={deletingId === a._id}
+          >
+            {deletingId === a._id ? (
+              // <span className="text-sm">...</span>
+              <BiLoader className="animate-spin" size={18} />
+            ) : (
+              <BiTrash size={18} />
+            )}
           </button>
         </div>
       ))}
