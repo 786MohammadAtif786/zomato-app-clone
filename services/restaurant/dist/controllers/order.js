@@ -1,5 +1,6 @@
 import TryCatch from "../middleware/tryCatch.js";
 import Address from "../model/Address.js";
+import Cart from "../model/Cart.js";
 export const createOrder = TryCatch(async (req, res) => {
     const user = req.user;
     if (!user) {
@@ -20,6 +21,18 @@ export const createOrder = TryCatch(async (req, res) => {
     if (!address) {
         return res.status(404).json({
             message: "Address Not found"
+        });
+    }
+    const cartItems = await Cart.find({ userId: user._id }).populate("itemId").populate("restaurantId");
+    if (cartItems.length === 0) {
+        return res.status(400).json({
+            message: "Cart is emplty"
+        });
+    }
+    const firstCartItem = cartItems[0];
+    if (!firstCartItem || !firstCartItem.restaurantId) {
+        return res.status(400).json({
+            message: "Invailid Cart Data",
         });
     }
 });
