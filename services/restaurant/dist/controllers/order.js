@@ -10,7 +10,7 @@ export const createOrder = TryCatch(async (req, res) => {
             message: "Unauthorized"
         });
     }
-    const { paymentMethod, addressId, distance } = req.body;
+    const { paymentMethod, addressId } = req.body;
     if (!addressId) {
         return res.status(400).json({
             message: "Address is required"
@@ -25,6 +25,18 @@ export const createOrder = TryCatch(async (req, res) => {
             message: "Address Not found"
         });
     }
+    const getDistanceKm = (lat1, lon1, lat2, lon2) => {
+        const R = 6371;
+        const dLat = ((lat2 - lat1) * Math.PI) / 180;
+        const dLon = ((lon2 - lon1) * Math.PI) / 180;
+        const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos((lat1 * Math.PI) / 180) *
+                Math.cos((lat2 * Math.PI) / 180) *
+                Math.sin(dLon / 2) *
+                Math.sin(dLon / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return +(R * c).toFixed(2);
+    };
     const cartItems = await Cart.find({ userId: user._id })
         .populate("itemId")
         .populate("restaurantId");
@@ -51,6 +63,7 @@ export const createOrder = TryCatch(async (req, res) => {
             message: "Sorry this restaurant is closed for now",
         });
     }
+    const distance = getDistanceKm(address.location.coordinates[1], address.location.coordinates[0], restaurant.autoLocation.coordinates[1], restaurant.autoLocation.coordinates[0]);
     let subtotal = 0;
     const orderItems = cartItems.map((cart) => {
         const item = cart.itemId;
