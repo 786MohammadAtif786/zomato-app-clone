@@ -4,6 +4,7 @@ import cloudinary from "cloudinary";
 import cors from "cors";
 import uploadRoutes from "./routes/cloudinary.js";
 import { connectRabbitMQ } from "./config/rabbitmq.js";
+import paymentRoutes from "./routes/payment.js";
 
 
 dotenv.config();
@@ -29,6 +30,8 @@ cloudinary.v2.config({
 });
 
 app.use("/api", uploadRoutes);
+app.use("/api/payment", paymentRoutes);
+
 const PORT = process.env.PORT || 3002;
 
 app.listen(PORT, () => {
