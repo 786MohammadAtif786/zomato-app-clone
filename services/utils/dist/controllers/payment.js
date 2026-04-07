@@ -1,0 +1,26 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.createRazorpayOrder = void 0;
+const axios_1 = __importDefault(require("axios"));
+const razorpay_1 = require("../config/razorpay");
+const createRazorpayOrder = async (req, res) => {
+    const { orderId } = req.body;
+    const { data } = await axios_1.default.get(`${process.env.RESTAURANT_SERVICE}/api/order/payment/${orderId}`, {
+        headers: {
+            "x-internal-key": process.env.INTERNAL_SERVICE_KEY,
+        },
+    });
+    const razorpayOrder = await razorpay_1.razorpay.orders.create({
+        amount: data.amount * 100,
+        currency: "INR",
+        receipt: orderId,
+    });
+    res.json({
+        razorpayOrderId: razorpayOrder.id,
+        key: process.env.RAZORPAY_KEY_ID,
+    });
+};
+exports.createRazorpayOrder = createRazorpayOrder;
