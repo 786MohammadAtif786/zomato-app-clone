@@ -13,6 +13,7 @@ import Cart from "./pages/Cart.tsx"
 import AddAddressPage from "./pages/Address.tsx";
 import Checkout from "./pages/Checkout.tsx";
 import PaymentSuccess from "./pages/PaymentSuccess.tsx";
+import Orders from "./pages/Orders.tsx";
 
 function App() {
   const  { user } = useAppData();
@@ -31,6 +32,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/paymentsuccess/:paymentId" element={<PaymentSuccess />} />
         <Route path="/checkout" element={<Checkout />} />
+          <Route path="/Orders" element={<Orders />} />
         <Route path="/address" element={<AddAddressPage />} />
         <Route path="/restaurant/:id" element={<RestaurantPage />} />
         <Route path="/cart" element={<Cart />} />
