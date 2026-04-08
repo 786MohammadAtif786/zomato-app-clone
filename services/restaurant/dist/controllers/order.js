@@ -168,68 +168,161 @@ export const fetchRestaurantOrders = TryCatch(async (req, res) => {
     });
 });
 const ALLOWED_STATUSES = ["accepted", "preparing", "ready_for_rider"];
+// export const updateOrderStatus = TryCatch(
+//   async (req: AuthenticatedRequest, res) => {
+//     const user = req.user;
+//     const { orderId } = req.params;
+//     const { status } = req.body;
+//     if (!user) {
+//       return res.status(401).json({
+//         message: "Unauthorized",
+//       });
+//     }
+//     if (!ALLOWED_STATUSES.includes(status)) {
+//       return res.status(400).json({
+//         message: "Invalid order status",
+//       });
+//     }
+//     const order = await Order.findById(orderId);
+//     if (!order) {
+//       return res.status(404).json({
+//         message: "Order not found",
+//       });
+//     }
+//     if (order.paymentStatus !== "paid") {
+//       return res.status(404).json({
+//         message: "Order not completed",
+//       });
+//     }
+//     const restaurant = await Restaurant.findById(order.restaurantId);
+//     if (!restaurant) {
+//       return res.status(404).json({
+//         message: "Restaurant not found",
+//       });
+//     }
+//     if (restaurant.ownerId !== user._id.toString()) {
+//       return res.status(401).json({
+//         message: "You are not allowed to update this order",
+//       });
+//     }
+//     order.status = status;
+//     await order.save();
+//     await axios.post(
+//       `${process.env.REALTIME_SERVICE}/api/v1/internal/emit`,
+//       {
+//         event: "order:update",
+//         room: `user:${order.userId}`,
+//         payload: {
+//           orderId: order._id,
+//           status: order.status,
+//         },
+//       },
+//       {
+//         headers: {
+//           "x-internal-key": process.env.INTERNAL_SERVICE_KEY,
+//         },
+//       }
+//     );
+//     // now assign riders
+//     if (status === "ready_for_rider") {
+//       console.log(
+//         "Publishing Order ready for rider event for order",
+//         order._id
+//       );
+//       await publishEvent("ORDER_READY_FOR_RIDER", {
+//         orderId: order._id.toString(),
+//         restaurantId: restaurant._id.toString(),
+//         location: restaurant.autoLocation,
+//       });
+//       console.log("Event Published successfully");
+//     }
+//     res.json({
+//       message: "order status updated successfully",
+//       order,
+//     });
+//   }
+// );
 export const updateOrderStatus = TryCatch(async (req, res) => {
     const user = req.user;
     const { orderId } = req.params;
     const { status } = req.body;
+    // 🔐 Auth check
     if (!user) {
         return res.status(401).json({
             message: "Unauthorized",
         });
     }
+    // ❌ Status validation
     if (!ALLOWED_STATUSES.includes(status)) {
         return res.status(400).json({
             message: "Invalid order status",
         });
     }
+    // 🔍 Order find
     const order = await Order.findById(orderId);
     if (!order) {
         return res.status(404).json({
             message: "Order not found",
         });
     }
+    // 💳 Payment check
     if (order.paymentStatus !== "paid") {
-        return res.status(404).json({
-            message: "Order not completed",
+        return res.status(400).json({
+            message: "Order not paid",
         });
     }
+    // 🏪 Restaurant find
     const restaurant = await Restaurant.findById(order.restaurantId);
     if (!restaurant) {
         return res.status(404).json({
             message: "Restaurant not found",
         });
     }
-    if (restaurant.ownerId !== user._id.toString()) {
-        return res.status(401).json({
+    // 🔒 Ownership check (IMPORTANT FIX)
+    if (restaurant.ownerId.toString() !== user._id.toString()) {
+        return res.status(403).json({
             message: "You are not allowed to update this order",
         });
     }
+    // 🔄 Update status
     order.status = status;
     await order.save();
-    await axios.post(`${process.env.REALTIME_SERVICE}/api/v1/internal/emit`, {
-        event: "order:update",
-        room: `user:${order.userId}`,
-        payload: {
-            orderId: order._id,
-            status: order.status,
-        },
-    }, {
-        headers: {
-            "x-internal-key": process.env.INTERNAL_SERVICE_KEY,
-        },
-    });
-    // now assign riders
-    if (status === "ready_for_rider") {
-        console.log("Publishing Order ready for rider event for order", order._id);
-        await publishEvent("ORDER_READY_FOR_RIDER", {
-            orderId: order._id.toString(),
-            restaurantId: restaurant._id.toString(),
-            location: restaurant.autoLocation,
+    // 🔔 Realtime service (SAFE CALL)
+    try {
+        await axios.post(`${process.env.REALTIME_SERVICE}/api/v1/internal/emit`, {
+            event: "order:update",
+            room: `user:${order.userId}`,
+            payload: {
+                orderId: order._id,
+                status: order.status,
+            },
+        }, {
+            headers: {
+                "x-internal-key": process.env.INTERNAL_SERVICE_KEY,
+            },
         });
-        console.log("Event Published successfully");
     }
-    res.json({
-        message: "order status updated successfully",
+    catch (err) {
+        console.log("Realtime service error 👉", err);
+    }
+    // 🚴 Assign rider (SAFE RabbitMQ)
+    if (status === "ready_for_rider") {
+        try {
+            console.log("Publishing rider event 👉", order._id);
+            await publishEvent("ORDER_READY_FOR_RIDER", {
+                orderId: order._id.toString(),
+                restaurantId: restaurant._id.toString(),
+                location: restaurant.autoLocation,
+            });
+            console.log("Event published successfully");
+        }
+        catch (err) {
+            console.log("RabbitMQ error 👉", err);
+        }
+    }
+    // ✅ Final response
+    return res.json({
+        message: "Order status updated successfully",
         order,
     });
 });
