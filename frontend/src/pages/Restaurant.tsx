@@ -6,6 +6,7 @@ import AddRestaurant from "../components/AddRestaurant.tsx";
 import RestaurantProfile from "../components/RestaurantProfile.tsx";
 import MenuItem from "../components/MenuItem.tsx";
 import AddMenuItem from "../components/AddMenuItem.tsx";
+import RestaurantOrders from "../components/RestaurantOrders.tsx";
 
 type SellerTab = "menu" | "add-item" | "sales";
 
@@ -88,6 +89,7 @@ const Restaurant = () => {
             onUpdate={setRestaurant}
             isSeller={true}
       />
+      <RestaurantOrders restaurantId={restaurant._id} />
        <div className="rounded-xl bg-white shadow-sm">
         <div className="flex border-b">
             {[

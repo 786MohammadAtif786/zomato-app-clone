@@ -232,7 +232,6 @@ export const updateOrderStatus = TryCatch(
 
     const { orderId } = req.params;
     const { status } = req.body;
-
     if (!user) {
       return res.status(401).json({
         message: "Unauthorized",
