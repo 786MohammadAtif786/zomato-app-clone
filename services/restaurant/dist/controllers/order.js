@@ -139,3 +139,29 @@ export const fetchOrderForPayment = TryCatch(async (req, res) => {
         currency: "INR",
     });
 });
+export const fetchRestaurantOrders = TryCatch(async (req, res) => {
+    const user = req.user;
+    const { restaurantId } = req.params;
+    if (!user) {
+        return res.status(401).json({
+            message: "Unauthorized",
+        });
+    }
+    if (!restaurantId) {
+        return res.status(400).json({
+            message: "Restaurant id is required",
+        });
+    }
+    const limit = req.query.limit ? Number(req.query.limit) : 0;
+    const orders = await Order.find({
+        restaurantId,
+        paymentStatus: "paid",
+    })
+        .sort({ createdAt: -1 })
+        .limit(limit);
+    return res.json({
+        success: true,
+        count: orders.length,
+        orders,
+    });
+});
