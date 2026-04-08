@@ -317,4 +317,18 @@ export const updateOrderStatus = TryCatch(
   }
 );
 
+export const getMyOrders = TryCatch(async (req: AuthenticatedRequest, res) => {
+  if (!req.user) {
+    return res.status(401).json({
+      message: "Unauthorized",
+    });
+  }
+
+  const orders = await Order.find({
+    userId: req.user._id.toString(),
+    paymentStatus: "paid",
+  }).sort({ createdAt: -1 });
+
+  res.json({ orders });
+});
 

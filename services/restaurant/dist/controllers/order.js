@@ -233,3 +233,15 @@ export const updateOrderStatus = TryCatch(async (req, res) => {
         order,
     });
 });
+export const getMyOrders = TryCatch(async (req, res) => {
+    if (!req.user) {
+        return res.status(401).json({
+            message: "Unauthorized",
+        });
+    }
+    const orders = await Order.find({
+        userId: req.user._id.toString(),
+        paymentStatus: "paid",
+    }).sort({ createdAt: -1 });
+    res.json({ orders });
+});
