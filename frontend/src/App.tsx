@@ -14,11 +14,19 @@ import AddAddressPage from "./pages/Address.tsx";
 import Checkout from "./pages/Checkout.tsx";
 import PaymentSuccess from "./pages/PaymentSuccess.tsx";
 import Orders from "./pages/Orders.tsx";
+import RiderDashboard from "./pages/RiderDashboard.tsx";
 
 function App() {
-  const  { user } = useAppData();
+  const  { user, loading } = useAppData();
+
+  if(loading) {
+    return <h1 className="text-2xl font-bold text-red-500 text-center mt-56">Loading...</h1>
+  }
   if( user && user.role === "seller") {
     return <Restaurant />
+  }
+   if( user && user.role === "rider") {
+    return <RiderDashboard />
   }
   return (
    <>

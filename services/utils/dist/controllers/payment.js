@@ -1,13 +1,18 @@
 "use strict";
+// import { Request, Response } from "express";
+// import axios from "axios"
+// import { razorpay } from "../config/razorpay";
+// import { verifyRazorpaySignature } from "../config/verifyRazorpay";
+// import { publishPaymentSuccess } from "../config/payment.producer";
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.verifyRazorpayPayment = exports.createRazorpayOrder = void 0;
 const axios_1 = __importDefault(require("axios"));
-const razorpay_1 = require("../config/razorpay");
-const verifyRazorpay_1 = require("../config/verifyRazorpay");
-const payment_producer_1 = require("../config/payment.producer");
+const razorpay_js_1 = require("../config/razorpay.js");
+const verifyRazorpay_js_1 = require("../config/verifyRazorpay.js");
+const payment_producer_js_1 = require("../config/payment.producer.js");
 const createRazorpayOrder = async (req, res) => {
     const { orderId } = req.body;
     const { data } = await axios_1.default.get(`${process.env.RESTAURANT_SERVICE}/api/order/payment/${orderId}`, {
@@ -15,7 +20,7 @@ const createRazorpayOrder = async (req, res) => {
             "x-internal-key": process.env.INTERNAL_SERVICE_KEY,
         },
     });
-    const razorpayOrder = await razorpay_1.razorpay.orders.create({
+    const razorpayOrder = await razorpay_js_1.razorpay.orders.create({
         amount: data.amount * 100,
         currency: "INR",
         receipt: orderId,
@@ -28,13 +33,13 @@ const createRazorpayOrder = async (req, res) => {
 exports.createRazorpayOrder = createRazorpayOrder;
 const verifyRazorpayPayment = async (req, res) => {
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature, orderId, } = req.body;
-    const isValid = (0, verifyRazorpay_1.verifyRazorpaySignature)(razorpay_order_id, razorpay_payment_id, razorpay_signature);
+    const isValid = (0, verifyRazorpay_js_1.verifyRazorpaySignature)(razorpay_order_id, razorpay_payment_id, razorpay_signature);
     if (!isValid) {
         return res.status(400).json({
             message: "Payment verification failed",
         });
     }
-    await (0, payment_producer_1.publishPaymentSuccess)({
+    await (0, payment_producer_js_1.publishPaymentSuccess)({
         orderId,
         paymentId: razorpay_payment_id,
         provider: "razorpay",
@@ -48,13 +53,6 @@ exports.verifyRazorpayPayment = verifyRazorpayPayment;
 // dotenv.config();
 // import Stripe from "stripe";
 // const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
-// const stripeSecret = process.env.STRIPE_SECRET_KEY;
-// if (!stripeSecret) {
-//   throw new Error("STRIPE_SECRET_KEY missing");
-// }
-// const stripe = new Stripe(stripeSecret, {
-//   apiVersion: "2024-04-10",
-// });
 // export const payWithStripe = async (req: Request, res: Response) => {
 //   try {
 //     const { orderId } = req.body;
@@ -89,6 +87,35 @@ exports.verifyRazorpayPayment = verifyRazorpayPayment;
 //     });
 //     res.json({
 //       url: session.url,
+//     });
+//   } catch (error) {
+//     res.status(500).json({
+//       message: "stripe payment failed",
+//     });
+//   }
+// };
+// export const verifyStripe = async (req: Request, res: Response) => {
+//   const { sessionId } = req.body;
+//   try {
+//     const session = await stripe.checkout.sessions.retrieve(sessionId);
+//     if (!session) {
+//       return res.status(400).json({
+//         message: "Payment verifcation failed",
+//       });
+//     }
+//     const orderId = session.metadata?.orderId;
+//     if (!orderId) {
+//       return res.status(400).json({
+//         message: "orderid not found in stripe session",
+//       });
+//     }
+//     await publishPaymentSuccess({
+//       orderId,
+//       paymentId: sessionId,
+//       provider: "stripe",
+//     });
+//     res.json({
+//       message: "payment verified successfully",
 //     });
 //   } catch (error) {
 //     res.status(500).json({
